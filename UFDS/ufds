@@ -1,0 +1,78 @@
+// Union Find Disjoint Set
+C++ Code
+----------------------------------
+
+
+#include <bits/stdc++.h>
+
+using namespace std;
+typedef long long ll;
+typedef pair<ll,ll> ii;
+typedef vector<ii> vii;
+
+
+void print_parents(vector<ll> &parent, int v)
+{
+	int i;
+	for(i=0;i<v;i++)
+	{
+		cout<<"\nParent of "<<i+1<<" : "<<parent[i]+1<<endl;
+	}
+}
+
+ll find(ll vertex, vector<ll> &parent)
+{
+	if(parent[vertex]==vertex)						// parent[-1] indicates it is its parent
+		return(vertex);
+	else
+		return(find(parent[vertex],parent));		
+}
+
+void Union(vector<pair<pair<ll,ll>,ll> > &edgeList, vector<ll> &parent, vector<ll> &rank, ll u, ll v)
+{
+	ll u_root = find(u,parent);				// check their parent
+	ll v_root = find(v,parent);
+
+	if(rank[u_root]<rank[v_root])						// if length of v is greater then 
+		parent[u_root] = v_root;					// add parent of v as parent of u
+	else if(rank[u_root]>rank[v_root])
+		parent[v_root] = u_root;
+	else								// if length is same
+	{
+		parent[u_root] = v_root;					// randomly choose one and assign
+		rank[v_root]++;						// increase its length
+	}
+}
+
+int main()
+{
+	int t;
+	cin>>t;
+	while(t--)
+	{
+		int i,v,e,t1,t2,t3;
+		cin>>v>>e;
+		vector<pair<pair<ll,ll>,ll> > edgeList;
+		for(i=0;i<e;i++)
+		{
+			cin>>t1>>t2>>t3;
+			edgeList.push_back({{t1-1,t2-1},t3});
+		}
+
+		vector<ll> parent(v);			// to keep track of the root/parent of each vertex
+		vector<ll> rank(v,1);
+
+		for(i=0;i<v;i++)
+		{
+			parent[i]= i;
+		}
+		//for union of all the edges
+		for(i=0;i<e;i++)
+			Union(edgeList,parent,rank, edgeList[i].first.first,edgeList[i].first.second);
+
+		// display the parent of each vertex
+		print_parents(parent,v);
+		cout<<endl;
+	}
+	return(0);
+}
